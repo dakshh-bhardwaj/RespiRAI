@@ -6,11 +6,11 @@
 
 | Home Page | Upload Interface |
 |:---:|:---:|
-| ![Home](Screenshot_1.png) | ![Upload](Screenshot_2.png) |
+| ![Home](Screenshot_5.png) | ![Upload](Screenshot_4.png) |
 
 | Analysis Result | Sample Scans | AI Explanation |
 |:---:|:---:|:---:|
-| ![Result](Screenshot_3.png) | ![Samples](Screenshot_4.png) | ![AI Info](Screenshot_5.png) |
+| ![Result](Screenshot_1.png) | ![Samples](Screenshot_3.png) | ![AI Info](Screenshot_2.png) |
 
 **RespiRAI** is a state-of-the-art deep learning application designed to detect pneumonia from chest X-ray images with high accuracy. Built with TensorFlow and Flask, it provides an intuitive web interface for instant diagnosis, helping to bridge the gap between advanced AI diagnostics and clinical application.
 
@@ -100,5 +100,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 *Disclaimer: This tool is for educational and research purposes only and should not be used as a substitute for professional medical advice, diagnosis, or treatment.*
+
 
 
