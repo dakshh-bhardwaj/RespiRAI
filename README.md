@@ -6,7 +6,7 @@
 
 | Home Page | Upload Interface |
 |:---:|:---:|
-| ![Home](static/screenshot_1.png) | ![Upload](static/screenshot_2.png) |
+| ![Home](Screenshot_1.png) | ![Upload](static/screenshot_2.png) |
 
 | Analysis Result | Sample Scans | AI Explanation |
 |:---:|:---:|:---:|
@@ -100,3 +100,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 *Disclaimer: This tool is for educational and research purposes only and should not be used as a substitute for professional medical advice, diagnosis, or treatment.*
+
