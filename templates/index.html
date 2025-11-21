@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RespiRAI - Pneumonia Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Background Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">RespiRAI</div>
+        <ul class="nav-links">
+            <li><a href="#diagnosis">Diagnosis</a></li>
+            <li><a href="#samples">Samples</a></li>
+            <li><a href="#about">About Pneumonia</a></li>
+            <li><a href="#how-it-works">How AI Works</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>RespiRAI<br>Lung Diagnosis</h1>
+                <p>State-of-the-art machine learning model for instant pneumonia detection from chest X-rays.</p>
+                <a href="#diagnosis" class="btn-hero">Start Diagnosis</a>
+            </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static', filename='lung_illustration.png') }}" alt="AI Lungs">
+            </div>
+        </section>
+
+        <!-- Diagnosis Section -->
+        <section id="diagnosis" class="section-padding">
+            <div class="section-header">
+                <h2>AI Diagnosis Tool</h2>
+                <p>Upload a chest X-ray to detect signs of pneumonia.</p>
+            </div>
+
+            <div class="upload-section glass-card">
+                <form method="post" enctype="multipart/form-data" class="upload-form" id="upload-form">
+                    <div class="drop-zone" id="drop-zone">
+                        <span class="drop-zone__prompt">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📁</div>
+                            Drag & Drop or Click to Upload X-Ray
+                        </span>
+                        <input type="file" name="file" class="drop-zone__input" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Analyze Scan</button>
+                </form>
+            </div>
+
+            {% if image_path %}
+            <div class="result-section glass-card" id="result">
+                <div class="image-preview">
+                    <img src="{{ image_path }}" alt="Uploaded X-ray">
+                </div>
+                <div class="prediction-card {% if prediction == 'PNEUMONIA' %}danger{% else %}success{% endif %}">
+                    <h2>{{ prediction }}</h2>
+                    <p>Confidence Score: <strong>{{ confidence }}%</strong></p>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <a href="/" style="color: var(--secondary-color); text-decoration: none; font-weight: 600;">←
+                        Analyze Another Image</a>
+                </div>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Sample Scans Section -->
+        <section id="samples" class="section-padding">
+            <div class="section-header">
+                <h2>Test with Samples</h2>
+                <p>Don't have an X-ray? Try one of these sample scans to see the AI in action.</p>
+            </div>
+
+            <div class="samples-grid">
+                <!-- Sample 1: Normal -->
+                <div class="sample-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="{{ url_for('static', filename='samples/sample_normal_1.png') }}"
+                                alt="Normal Scan">
+                            <div class="card-info">
+                                <h3>Healthy Male</h3>
+                                <p>Age: 25</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Details</h3>
+                            <p>Clear lung fields. No signs of consolidation or opacity.</p>
+                            <button class="btn-test"
+                                onclick="testSample('{{ url_for('static', filename='samples/sample_normal_1.png') }}', 'sample_normal_1.png')">Test
+                                This Scan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 2: Normal -->
+                <div class="sample-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="{{ url_for('static', filename='samples/sample_normal_2.png') }}"
+                                alt="Normal Scan">
+                            <div class="card-info">
+                                <h3>Healthy Female</h3>
+                                <p>Age: 40</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Details</h3>
+                            <p>Normal cardiac silhouette. Clear diaphragm and costophrenic angles.</p>
+                            <button class="btn-test"
+                                onclick="testSample('{{ url_for('static', filename='samples/sample_normal_2.png') }}', 'sample_normal_2.png')">Test
+                                This Scan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 3: Pneumonia -->
+                <div class="sample-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="{{ url_for('static', filename='samples/sample_pneumonia_1.png') }}"
+                                alt="Pneumonia Scan">
+                            <div class="card-info">
+                                <h3>Pneumonia Case</h3>
+                                <p>Age: 60 (Male)</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Details</h3>
+                            <p>Visible opacity in lower right lung field indicating infection.</p>
+                            <button class="btn-test"
+                                onclick="testSample('{{ url_for('static', filename='samples/sample_pneumonia_1.png') }}', 'sample_pneumonia_1.png')">Test
+                                This Scan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 4: Pneumonia -->
+                <div class="sample-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="{{ url_for('static', filename='samples/sample_pneumonia_2.png') }}"
+                                alt="Pneumonia Scan">
+                            <div class="card-info">
+                                <h3>Pneumonia Case</h3>
+                                <p>Age: 75 (Female)</p>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Details</h3>
+                            <p>Diffuse opacities present in both lungs. Severe infection signs.</p>
+                            <button class="btn-test"
+                                onclick="testSample('{{ url_for('static', filename='samples/sample_pneumonia_2.png') }}', 'sample_pneumonia_2.png')">Test
+                                This Scan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Pneumonia Section -->
+        <section id="about" class="section-padding">
+            <div class="glass-card info-card-container">
+                <div class="info-text">
+                    <h2>What is Pneumonia?</h2>
+                    <p>Pneumonia is an infection that inflames the air sacs in one or both lungs. The air sacs may fill
+                        with fluid or pus, causing cough with phlegm or pus, fever, chills, and difficulty breathing.
+                    </p>
+
+                    <h3>Common Symptoms</h3>
+                    <ul class="symptom-list">
+                        <li>Chest pain when breathing or coughing</li>
+                        <li>Confusion or changes in mental awareness</li>
+                        <li>Cough, which may produce phlegm</li>
+                        <li>Fatigue</li>
+                        <li>Fever, sweating and shaking chills</li>
+                    </ul>
+                </div>
+                <div class="info-image">
+                    <img src="{{ url_for('static', filename='pneumonia_infographic.png') }}"
+                        alt="Pneumonia Infographic">
+                </div>
+            </div>
+        </section>
+
+        <!-- How AI Works Section -->
+        <section id="how-it-works" class="section-padding">
+            <div class="section-header">
+                <h2>How the AI Works</h2>
+                <p>Our system uses a Convolutional Neural Network (CNN) trained on thousands of chest X-rays.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Deep Learning</h3>
+                    <p>The model learns to identify complex patterns in X-ray images that indicate infection.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Results</h3>
+                    <p>Get a diagnosis in seconds, allowing for faster medical intervention.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>High Accuracy</h3>
+                    <p>Trained on a validated dataset to ensure reliable detection capabilities.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Powered by TensorFlow & Flask • Deep Learning Model</p>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.5;">Disclaimer: This tool is for educational
+                purposes only and not a substitute for professional medical advice.</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">ANALYZING SCAN...</div>
+    </div>
+
+    <script>
+        // Drag and Drop Logic
+        document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
+            const dropZoneElement = inputElement.closest(".drop-zone");
+
+            dropZoneElement.addEventListener("click", (e) => {
+                inputElement.click();
+            });
+
+            inputElement.addEventListener("change", (e) => {
+                if (inputElement.files.length) {
+                    updateThumbnail(dropZoneElement, inputElement.files[0]);
+                }
+            });
+
+            dropZoneElement.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                dropZoneElement.classList.add("drop-zone--over");
+            });
+
+            ["dragleave", "dragend"].forEach((type) => {
+                dropZoneElement.addEventListener(type, (e) => {
+                    dropZoneElement.classList.remove("drop-zone--over");
+                });
+            });
+
+            dropZoneElement.addEventListener("drop", (e) => {
+                e.preventDefault();
+
+                if (e.dataTransfer.files.length) {
+                    inputElement.files = e.dataTransfer.files;
+                    updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+                }
+
+                dropZoneElement.classList.remove("drop-zone--over");
+            });
+        });
+
+        function updateThumbnail(dropZoneElement, file) {
+            let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
+
+            if (dropZoneElement.querySelector(".drop-zone__prompt")) {
+                dropZoneElement.querySelector(".drop-zone__prompt").remove();
+            }
+
+            if (!thumbnailElement) {
+                thumbnailElement = document.createElement("div");
+                thumbnailElement.classList.add("drop-zone__thumb");
+                dropZoneElement.appendChild(thumbnailElement);
+            }
+
+            thumbnailElement.dataset.label = file.name;
+
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+            };
+        }
+
+        // Loading Overlay Logic
+        const form = document.getElementById('upload-form');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        if (form) {
+            form.addEventListener('submit', function () {
+                loadingOverlay.classList.add('active');
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Sample Testing Logic
+        async function testSample(imageUrl, filename) {
+            try {
+                // Show loading state immediately
+                const loadingOverlay = document.getElementById('loading-overlay');
+                loadingOverlay.classList.add('active');
+
+                // Fetch the image
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const file = new File([blob], filename, { type: blob.type });
+
+                // Create a DataTransfer to simulate user upload
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+
+                // Set the file input files
+                const fileInput = document.querySelector('.drop-zone__input');
+                fileInput.files = dataTransfer.files;
+
+                // Update thumbnail (visual feedback)
+                const dropZoneElement = document.getElementById('drop-zone');
+                updateThumbnail(dropZoneElement, file);
+
+                // Submit the form
+                document.getElementById('upload-form').submit();
+
+            } catch (error) {
+                console.error('Error testing sample:', error);
+                alert('Failed to load sample image.');
+                loadingOverlay.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+
+</html>
